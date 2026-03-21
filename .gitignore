@@ -1,0 +1,23 @@
+# Gradle / Kotlin
+.gradle/
+build/
+**/build/
+local.properties
+*.iml
+.idea/
+.kotlin/
+
+# Xcode / iOS
+*.xcuserstate
+xcuserdata/
+DerivedData/
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# macOS
+.DS_Store
+
+# KMP framework output (пересобирается скриптом)
+shared/build/
