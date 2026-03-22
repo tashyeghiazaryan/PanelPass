@@ -36,9 +36,8 @@ android {
 }
 
 dependencies {
-    // Explicit variants so KMP Android library resolves into compile classpath (not empty `default`).
-    debugImplementation(project(":shared"))
-    releaseImplementation(project(":shared"))
+    // KMP :shared на compile classpath (api = виден при компиляции androidApp; debugImplementation у части окружений не подхватывался).
+    api(project(":shared"))
     implementation(libs.koin.core)
     implementation(libs.koin.android)
     implementation(libs.androidx.core.ktx)

@@ -9,6 +9,7 @@ compileSdk = "35"
 minSdk = "24"
 targetSdk = "35"
 coroutines = "1.9.0"
+koin = "4.2.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -21,6 +22,8 @@ compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 google-auth = { group = "com.google.android.gms", name = "play-services-auth", version = "21.2.0" }
 play-billing = { group = "com.android.billingclient", name = "billing", version = "7.1.1" }
 kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
+koin-core = { group = "io.insert-koin", name = "koin-core", version.ref = "koin" }
+koin-android = { group = "io.insert-koin", name = "koin-android", version.ref = "koin" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -1,0 +1,4 @@
+#!/bin/sh
+# Всегда делегируем в корень репозитория — там единственный правильный settings.gradle.kts и classpath :shared.
+cd "$(dirname "$0")/.." || exit 1
+exec ./gradlew "$@"
