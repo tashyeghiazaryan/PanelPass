@@ -6,6 +6,7 @@ plugins {
 
 kotlin {
     androidTarget {
+        publishLibraryVariants("debug", "release")
         compilations.all {
             kotlinOptions {
                 jvmTarget = "17"

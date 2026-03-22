@@ -8,8 +8,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import com.panelpass.auth.ActivityHolder
-import com.panelpass.ui.MainScreen
+import com.panelpass.features.home.ui.MainScreen
+import com.panelpass.platform.auth.GoogleAuthRepository
+import com.panelpass.shell.ActivityHolder
 
 class MainActivity : ComponentActivity() {
 
@@ -25,7 +26,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: android.content.Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == com.panelpass.auth.GoogleAuthRepository.REQUEST_CODE_SIGN_IN) {
+        if (requestCode == GoogleAuthRepository.REQUEST_CODE_SIGN_IN) {
             (application as? PanelPassApp)?.deliverSignInResult(data)
         }
     }

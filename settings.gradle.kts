@@ -17,3 +17,6 @@ dependencyResolutionManagement {
 
 include(":shared")
 include(":androidApp")
+
+// Пример отдельного KMP-модуля фичи (раскомментируйте при выносе кода):
+// include(":feature-profile")

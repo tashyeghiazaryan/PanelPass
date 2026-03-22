@@ -1,7 +1,7 @@
 package com.panelpass.platform.ios
 
-import com.panelpass.domain.auth.AuthRepository
-import com.panelpass.domain.auth.User
+import com.panelpass.features.auth.domain.AuthRepository
+import com.panelpass.features.auth.domain.User
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 
@@ -15,6 +15,16 @@ public class IosAuthRepository(
             onFailure = { cont.resume(Result.failure(it)) },
         )
     }
+
+    override suspend fun signInWithEmail(email: String, password: String): Result<User> =
+        suspendCancellableCoroutine { cont ->
+            apple.signInWithEmail(
+                email = email,
+                password = password,
+                onSuccess = { cont.resume(Result.success(it)) },
+                onFailure = { cont.resume(Result.failure(it)) },
+            )
+        }
 
     override suspend fun signOut() {
         apple.signOut()

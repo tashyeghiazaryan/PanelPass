@@ -1,9 +1,9 @@
 package com.panelpass.platform.ios
 
-import com.panelpass.domain.billing.BillingRepository
-import com.panelpass.domain.billing.PurchaseResult
-import com.panelpass.domain.billing.SubscriptionProduct
-import com.panelpass.domain.billing.SubscriptionState
+import com.panelpass.features.billing.domain.BillingRepository
+import com.panelpass.features.billing.domain.PurchaseResult
+import com.panelpass.features.billing.domain.SubscriptionProduct
+import com.panelpass.features.billing.domain.SubscriptionState
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 

@@ -1,4 +1,4 @@
-package com.panelpass.billing
+package com.panelpass.platform.billing
 
 import android.app.Activity
 import android.content.Context
@@ -13,17 +13,13 @@ import com.android.billingclient.api.PurchasesUpdatedListener
 import com.android.billingclient.api.QueryProductDetailsParams
 import com.android.billingclient.api.QueryPurchasesParams
 import com.android.billingclient.api.acknowledgePurchase
-import com.android.billingclient.api.buildBillingClient
-import com.android.billingclient.api.queryProductDetails
-import com.android.billingclient.api.queryPurchasesAsync
-import com.panelpass.auth.ActivityHolder
-import com.panelpass.domain.billing.BillingRepository
-import com.panelpass.domain.billing.PurchaseResult
-import com.panelpass.domain.billing.SubscriptionProduct
-import com.panelpass.domain.billing.SubscriptionState
+import com.panelpass.features.billing.domain.BillingRepository
+import com.panelpass.features.billing.domain.PurchaseResult
+import com.panelpass.features.billing.domain.SubscriptionProduct
+import com.panelpass.features.billing.domain.SubscriptionState
+import com.panelpass.shell.ActivityHolder
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 
@@ -34,14 +30,13 @@ internal class PlayBillingRepository(
     private val context: Context,
 ) : BillingRepository, PurchasesUpdatedListener {
 
-    private val billingClient: BillingClient = buildBillingClient(context)
+    private val billingClient: BillingClient = BillingClient.newBuilder(context)
         .setListener(this)
         .enablePendingPurchases()
         .build()
 
     private var connected = false
     private val _subscriptionState = MutableStateFlow<SubscriptionState>(SubscriptionState.Unknown)
-    override val subscriptionState = _subscriptionState.asStateFlow()
 
     private val purchaseResultChannel = Channel<PurchaseResult>(Channel.RENDEZVOUS)
 
@@ -97,7 +92,7 @@ internal class PlayBillingRepository(
 
     private suspend fun purchaseInternal(activity: Activity, productId: String): Result<PurchaseResult> {
         if (!connected) return Result.failure(IllegalStateException("Billing not connected"))
-        val productDetailsResult = suspendCancellableCoroutine { cont ->
+        val productDetailsResult = suspendCancellableCoroutine<ProductDetails?> { cont ->
             val productList = listOf(
                 QueryProductDetailsParams.Product.newBuilder()
                     .setProductId(productId)

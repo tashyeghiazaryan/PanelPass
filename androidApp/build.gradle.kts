@@ -36,8 +36,11 @@ android {
 }
 
 dependencies {
-    // Commented out as :shared project is not yet found in workspace
-    // implementation(project(":shared"))
+    // Explicit variants so KMP Android library resolves into compile classpath (not empty `default`).
+    debugImplementation(project(":shared"))
+    releaseImplementation(project(":shared"))
+    implementation(libs.koin.core)
+    implementation(libs.koin.android)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.lifecycle.runtime.compose)
@@ -48,8 +51,4 @@ dependencies {
     implementation(libs.google.auth)
     implementation(libs.play.billing)
     implementation(libs.kotlinx.coroutines.android)
-}
-
-tasks.register<Wrapper>("wrapper") {
-    gradleVersion = "8.11.1"
 }

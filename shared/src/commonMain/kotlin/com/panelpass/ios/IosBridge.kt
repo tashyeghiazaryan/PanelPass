@@ -1,35 +1,36 @@
 package com.panelpass.ios
 
-import com.panelpass.AppContext
-import com.panelpass.domain.auth.User
-import com.panelpass.domain.billing.PurchaseResult
-import com.panelpass.domain.billing.SubscriptionState
+import com.panelpass.features.auth.domain.User
+import com.panelpass.features.billing.domain.PurchaseResult
+import com.panelpass.features.billing.domain.SubscriptionState
+import com.panelpass.shell.AppContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 /**
  * Bridge for iOS (Swift) to call shared use cases with callbacks.
+ * Package stays `com.panelpass.ios` for stable Swift interop.
  */
-object IosBridge {
+public object IosBridge {
 
     private val scope = CoroutineScope(Dispatchers.Default)
 
-    fun getCurrentUser(callback: (User?) -> Unit) {
+    public fun getCurrentUser(callback: (User?) -> Unit) {
         scope.launch {
             val user = AppContext.getCurrentUserUseCase()
             callback(user)
         }
     }
 
-    fun getSubscriptionState(callback: (SubscriptionState) -> Unit) {
+    public fun getSubscriptionState(callback: (SubscriptionState) -> Unit) {
         scope.launch {
             val state = AppContext.getSubscriptionStateUseCase()
             callback(state)
         }
     }
 
-    fun signIn(callback: (User?, Throwable?) -> Unit) {
+    public fun signIn(callback: (User?, Throwable?) -> Unit) {
         scope.launch {
             val result = AppContext.signInUseCase()
             result.fold(
@@ -39,7 +40,21 @@ object IosBridge {
         }
     }
 
-    fun purchase(productId: String, callback: (PurchaseResult?, Throwable?) -> Unit) {
+    public fun signInWithEmail(
+        email: String,
+        password: String,
+        callback: (User?, Throwable?) -> Unit,
+    ) {
+        scope.launch {
+            val result = AppContext.signInWithEmailUseCase(email, password)
+            result.fold(
+                onSuccess = { callback(it, null) },
+                onFailure = { callback(null, it) },
+            )
+        }
+    }
+
+    public fun purchase(productId: String, callback: (PurchaseResult?, Throwable?) -> Unit) {
         scope.launch {
             val result = AppContext.purchaseSubscriptionUseCase(productId)
             result.fold(
@@ -49,7 +64,7 @@ object IosBridge {
         }
     }
 
-    fun restorePurchases(callback: (Throwable?) -> Unit) {
+    public fun restorePurchases(callback: (Throwable?) -> Unit) {
         scope.launch {
             val result = AppContext.restorePurchasesUseCase()
             callback(result.exceptionOrNull())

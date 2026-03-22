@@ -1,15 +1,16 @@
 # PanelPass
 
-Cross-platform mobile app (iOS and Android) with Kotlin Multiplatform: Apple / Google Sign In and in-app subscriptions (StoreKit 2 / Play Billing).
+Cross-platform mobile app (iOS and Android) with Kotlin Multiplatform: Apple / Google Sign In, **email + password** (local demo session), and in-app subscriptions (StoreKit 2 / Play Billing).
+
+> **Email login** is implemented for UX/testing: validation + local persistence only. For production, wire `AuthRepository.signInWithEmail` to your backend or Firebase Auth.
 
 ## Structure
 
-- **shared/** — KMP shared (domain, use cases, DI, IosBridge)
-- **androidApp/** — Android (Compose, Google Sign In, Play Billing), package `com.panelpass`
-- **iosApp/** — iOS app
-  - **PanelPass.xcodeproj** — Xcode project (откройте этот файл в Xcode)
-  - **PanelPass/** — исходники Swift (SwiftUI, Sign in with Apple, StoreKit 2), Info.plist, entitlements
-- **shared/src/iosMain/** — `IosAuthRepository` / `IosBillingRepository` и провайдеры `AppleSignInProvider` / `StoreKitBillingProvider` с колбэками (Swift не реализует Kotlin `suspend` + `Result` напрямую)
+Подробно: **[ARCHITECTURE.md](./ARCHITECTURE.md)** (слои, как добавить фичу, Gradle-модули).
+
+- **shared/** — KMP: `features/<name>/{domain,usecase}`, `shell` (AppContext, navigation), `di` + `di.modules` (Koin), `ios` (IosBridge), `platform/ios` (обёртки под Swift)
+- **androidApp/** — `platform/*` (Google / Play Billing), `features/*/ui` (Compose), `shell`, `com.panelpass` (Application / Activity)
+- **iosApp/** — Xcode-проект, SwiftUI, провайдеры в `PanelPass/`
 
 ## Открытие проекта
 

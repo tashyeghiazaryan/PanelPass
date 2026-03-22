@@ -4,8 +4,17 @@ import shared
 
 /// Swift implementation of Kotlin `AppleSignInProvider`.
 final class AppleSignInProviderImpl: NSObject, AppleSignInProvider {
+    private enum Keys {
+        static let emailUserId = "panelpass_email_user_id"
+        static let emailUserEmail = "panelpass_email_user_email"
+        static let emailUserName = "panelpass_email_user_name"
+    }
+
+    private let defaults = UserDefaults.standard
     private var signInSuccess: ((User) -> Void)?
     private var signInFailure: ((KotlinThrowable) -> Void)?
+
+    private static let minPasswordLength = 6
 
     func startSignIn(onSuccess: @escaping (User) -> Void, onFailure: @escaping (KotlinThrowable) -> Void) {
         signInSuccess = onSuccess
@@ -18,10 +27,41 @@ final class AppleSignInProviderImpl: NSObject, AppleSignInProvider {
         controller.performRequests()
     }
 
-    func signOut() {}
+    func signInWithEmail(
+        email: String,
+        password: String,
+        onSuccess: @escaping (User) -> Void,
+        onFailure: @escaping (KotlinThrowable) -> Void,
+    ) {
+        let trimmed = email.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty, trimmed.contains("@") else {
+            onFailure(IosErrorsKt.throwable(message: "Invalid email"))
+            return
+        }
+        guard password.count >= Self.minPasswordLength else {
+            onFailure(
+                IosErrorsKt.throwable(
+                    message: "Password must be at least \(Self.minPasswordLength) characters",
+                ),
+            )
+            return
+        }
+        let localPart = trimmed.split(separator: "@", maxSplits: 1).first.map(String.init) ?? ""
+        let user = User(
+            id: "email:\(trimmed.lowercased())",
+            email: trimmed,
+            name: localPart.isEmpty ? nil : localPart,
+        )
+        saveEmailSession(user)
+        onSuccess(user)
+    }
+
+    func signOut() {
+        clearEmailSession()
+    }
 
     func getCurrentUser() -> User? {
-        nil
+        loadEmailUser()
     }
 
     func isAvailable() -> Bool {
@@ -42,6 +82,7 @@ extension AppleSignInProviderImpl: ASAuthorizationControllerDelegate {
             signInFailure?(IosErrorsKt.throwable(message: "Invalid credential"))
             return
         }
+        clearEmailSession()
         let user = User(
             id: credential.user,
             email: credential.email,
@@ -71,5 +112,26 @@ extension AppleSignInProviderImpl: ASAuthorizationControllerPresentationContextP
             return ASPresentationAnchor()
         }
         return window
+    }
+
+    private func saveEmailSession(_ user: User) {
+        defaults.set(user.id, forKey: Keys.emailUserId)
+        defaults.set(user.email, forKey: Keys.emailUserEmail)
+        defaults.set(user.name, forKey: Keys.emailUserName)
+    }
+
+    private func clearEmailSession() {
+        defaults.removeObject(forKey: Keys.emailUserId)
+        defaults.removeObject(forKey: Keys.emailUserEmail)
+        defaults.removeObject(forKey: Keys.emailUserName)
+    }
+
+    private func loadEmailUser() -> User? {
+        guard let id = defaults.string(forKey: Keys.emailUserId), !id.isEmpty else { return nil }
+        return User(
+            id: id,
+            email: defaults.string(forKey: Keys.emailUserEmail),
+            name: defaults.string(forKey: Keys.emailUserName),
+        )
     }
 }
